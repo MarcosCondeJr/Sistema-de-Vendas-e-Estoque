@@ -1,39 +1,41 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <locale.h>
 
 #define MAX_CLIENTES 100
 #define MAX_PRODUTOS 100
-#define MAX_COMPRAS 10
+#define MAX_COMPRAS 100
 #define MAX_CARACTER 50
 
 typedef struct {
     int id;
-    char nome[50];
+    char nome[MAX_CARACTER];
 } Cliente;
 
 typedef struct {
     int id;
-    char nome[50];
+    char nome[MAX_CARACTER];
     float preco;
     int quantidade;
 } Produto;
 
 typedef struct {
-    char nomecliente[50];
-    int produtoIds[MAX_COMPRAS];
+    char nomecliente[MAX_CARACTER];
+    char nomeproduto[MAX_COMPRAS];
     int quantidade[MAX_COMPRAS];
-    int numProdutos;
-} Compra;
+    float preco;
+} Carrinho;
 
 Cliente clientes[MAX_CLIENTES];
 Produto produtos[MAX_PRODUTOS];
-Compra compras[MAX_CLIENTES];
+Carrinho carrinho[MAX_COMPRAS];
 
 int numClientes = 0;
 int numProdutos = 0;
 int numCompras = 0;
+
 //Modulo venda - cadastrar cliente
 void cadastrarCliente() {
     if (numClientes < MAX_CLIENTES) {
@@ -89,8 +91,11 @@ void cadastrarProduto() {
     }
 }
 //Modulo venda - realiza uma compra;
+//Pessoa trabalhando no modulo - TAUÃ
 void comprar() {
-	char buffer[50];
+	char buffer[MAX_CARACTER], compara[MAX_CARACTER];
+	int indice;
+	int achou = 0;
 	
     if (numClientes == 0 || numProdutos == 0) {
         printf("Não há clientes ou produtos cadastrados.\n");
@@ -98,16 +103,39 @@ void comprar() {
         return;
     }
 
-    int clienteId, produtoId, quantidade, i;
-    printf("Digite o ID do cliente: ");
-    scanf(" %49[^\n]s", &Compra.nomecliente);
+    int clienteId, produtoId, quantidade, i, x;
+    
+    printf("Digite o nome cliente: ");
+    scanf(" %49[^\n]s", buffer);
+    
+    for(i = 0; buffer[i] != '\0'; i++){
+    	buffer[i] = tolower(buffer[i]);	
+	}
 
-    if (clienteId <= 0 || clienteId > numClientes) {
+
+	for(i = 0; i < numClientes; i++){
+		strcpy(compara, clientes[i].nome);
+		
+		for(x = 0; compara[x] != '\0'; x++){
+			compara[x] = tolower(compara[x]);
+		}
+		
+		if(strcmp(compara, buffer) == 0){
+			achou = 1;
+			indice = i;
+			
+			break;
+		}
+	}
+	
+    if (achou == 0) {
         printf("Cliente não encontrado.\n");
         return;
     }
+    
+    buffer[0] = toupper(buffer[0]);
 
-    Compra c;
+    strcpy(carrinho[indice].nomecliente);
     c.clienteId = clienteId;
     c.numProdutos = 0;
 
@@ -200,7 +228,7 @@ int main() {
             do{
                 printf("1. Cadastrar Cliente\n");
                 printf("2. Realizar Venda\n");
-                printf("3. Listar Produtos\n");
+                printf("3. Listar carrinho\n");
                 printf("4. Trocar de Usuário\n");
 				printf("5. Atualizar carrinho\n"); 
                 printf("0. Sair\n");
