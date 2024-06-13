@@ -228,7 +228,7 @@ void listarCompras() {
     }
     
 }
-//Modulo vendas/estoque - Permite a troca de usuï¿½rios
+//Modulo vendas/estoque - Permite a troca de usuários
 int trocarUsuario(){
 	int senha_usuario;
 	int cod_usuario;
@@ -249,6 +249,9 @@ int trocarUsuario(){
     //Senha ou login errados;
     return -1;
 	
+}
+//Modulo vendas - Atualiza o carrinho
+void atualiza_carrinho(){
 }
 
 int main() {
@@ -280,10 +283,13 @@ int main() {
                         comprar();
                     break;
                     case 3:
-                        listarProdutos();
+                        listarCompras();
                     break;
                     case 4:
                         
+                    break;
+                    case 5:
+                    	
                     break;
                     case 0:
                         login = -1;
