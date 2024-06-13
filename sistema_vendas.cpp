@@ -23,14 +23,15 @@ typedef struct {
 
 typedef struct {
     char nomecliente[MAX_CARACTER];
-    char nomeproduto[MAX_COMPRAS];
+    char nomeproduto[MAX_COMPRAS][MAX_CARACTER];
     int quantidade[MAX_COMPRAS];
-    float preco;
+    int num_produtos;
+    float preco[MAX_COMPRAS];
 } Carrinho;
 
 Cliente clientes[MAX_CLIENTES];
 Produto produtos[MAX_PRODUTOS];
-Carrinho carrinho[MAX_COMPRAS];
+Carrinho carrinho;
 
 int numClientes = 0;
 int numProdutos = 0;
@@ -38,13 +39,15 @@ int numCompras = 0;
 
 //Modulo venda - cadastrar cliente
 void cadastrarCliente() {
+    char buffer[MAX_CARACTER];
+
     if (numClientes < MAX_CLIENTES) {
-        Cliente c;
-        c.id = numClientes + 1;
         printf("Digite o nome do cliente: ");
-        scanf("%s", c.nome);
-        clientes[numClientes] = c;
+        scanf(" %49[^\n]s", buffer);
+
+        strcpy(clientes[numClientes].nome, buffer);
         numClientes++;
+
         printf("Cliente cadastrado com sucesso!\n");
     } else {
         printf("Limite de clientes atingido.\n");
@@ -91,10 +94,10 @@ void cadastrarProduto() {
     }
 }
 //Modulo venda - realiza uma compra;
-//Pessoa trabalhando no modulo - TAUÃ
+//Pessoa trabalhando no modulo - TAUã
 void comprar() {
 	char buffer[MAX_CARACTER], compara[MAX_CARACTER];
-	int indice;
+	int qtd_compras, quantidade, i, x, z;
 	int achou = 0;
 	
     if (numClientes == 0 || numProdutos == 0) {
@@ -102,8 +105,6 @@ void comprar() {
         
         return;
     }
-
-    int clienteId, produtoId, quantidade, i, x;
     
     printf("Digite o nome cliente: ");
     scanf(" %49[^\n]s", buffer);
@@ -122,7 +123,6 @@ void comprar() {
 		
 		if(strcmp(compara, buffer) == 0){
 			achou = 1;
-			indice = i;
 			
 			break;
 		}
@@ -134,38 +134,74 @@ void comprar() {
     }
     
     buffer[0] = toupper(buffer[0]);
+    achou = 0;
 
-    strcpy(carrinho[indice].nomecliente);
-    c.clienteId = clienteId;
-    c.numProdutos = 0;
+    strcpy(carrinho.nomecliente, buffer);
 
     printf("Digite o número de produtos que deseja comprar: ");
-    scanf("%d", &c.numProdutos);
+    scanf("%d", &qtd_compras);
 
-    if (c.numProdutos > MAX_COMPRAS) {
+    if (qtd_compras > MAX_COMPRAS) {
         printf("Limite de produtos por compra excedido.\n");
         return;
     }
 
-    for (i = 0; i < c.numProdutos; i++) {
-        printf("Digite o ID do produto %d: ", i + 1);
-        scanf("%d", &produtoId);
-        if (produtoId <= 0 || produtoId > numProdutos) {
-            printf("Produto não encontrado.\n");
-            return;
-        }
-        printf("Digite a quantidade do produto %d: ", i + 1);
-        scanf("%d", &quantidade);
+    for (i = 0; i < qtd_compras; i++) {
+        achou = 0;
 
-        c.produtoIds[i] = produtoId;
-        c.quantidade[i] = quantidade;
-        produtos[c.produtoIds[i] - 1].quantidade -= quantidade;
-        //atualiza o estoque
+        printf("Digite o nome do %d produto: ", i + 1);
+        scanf(" %49[^\n]s", buffer);
+
+        for(x = 0; buffer[x] != '\0'; x++){
+            buffer[x] = tolower(buffer[x]);
+        }
+
+        for(x = 0; x < numProdutos; x++){
+            strcpy(compara, produtos[i].nome);
+
+            for(z = 0; compara[z] != '\0'; z++){
+                compara[z] = tolower(compara[z]);
+            }
+
+            if(strcmp(compara, buffer) == 0){
+                achou = 1;
+
+                if(produtos[i].quantidade == 0){
+                    printf("Nï¿½o hï¿½ esse produto no estoque...\n");
+
+                    break;
+                }
+
+                do{
+                    printf("Quantidade de \'%s\' em estoque - %d;\n", produtos[i].nome ,produtos[i].quantidade);
+                    printf("Digite a quantidade do %d produto: ", i + 1);
+                    scanf("%d", &quantidade);
+                    
+                    system("cls");
+                }while(!(quantidade > 0 && quantidade < produtos[i].quantidade));
+
+                produtos[i].quantidade -= quantidade;
+
+                strcpy(carrinho.nomeproduto[numCompras], buffer);
+                carrinho.quantidade[numCompras] = quantidade;
+                carrinho.preco[numCompras] = produtos[i].preco;
+
+                numCompras++;
+
+                printf("Compra realizada com sucesso!!\n");
+
+                break;
+            }
+
+            if(!achou){
+                printf("Produto não encontrado.\n");
+                
+                return;
+            }
+        }
     }
 
-    compras[numCompras] = c;
-    numCompras++;
-    printf("Compra realizada com sucesso!\n");
+    carrinho.num_produtos = numCompras;
 }
 //Modulo venda - Lista todos os clientes;
 void listarClientes() {
@@ -179,25 +215,24 @@ void listarClientes() {
 void listarProdutos() {
     int i;
     for (i = 0; i < numProdutos; i++) {
-        printf("ID: %d, Nome: %s, Preço: %.2f\n", produtos[i].id, produtos[i].nome, produtos[i].preco);
+        printf("ID: %d, Nome: %s, Preï¿½o: %.2f\n", produtos[i].id, produtos[i].nome, produtos[i].preco);
     }
 }
 //Modulo vendas - lista todas as compras efetuadas
 void listarCompras() {
-    int i, j;
-    for (i = 0; i < numCompras; i++) {
-        printf("Cliente ID: %d\n", compras[i].clienteId);
-        for (j = 0; j < compras[i].numProdutos; j++) {
-            printf("Produto ID: %d, Quantidade: %d\n", compras[i].produtoIds[j], compras[i].quantidade[j]);
-        }
+    int j;
+    printf("Nome cliente: %s\n", carrinho.nomecliente);
+
+    for (j = 0; j < carrinho.num_produtos; j++) {
+        printf("Nome produto: %s, Quantidade: %d\n", carrinho.nomeproduto[j], carrinho.quantidade[j]);
     }
+    
 }
-//Modulo vendas/estoque - Permite a troca de usuários
+//Modulo vendas/estoque - Permite a troca de usuï¿½rios
 int trocarUsuario(){
 	int senha_usuario;
 	int cod_usuario;
 
-    int login;
 
 	printf("Informe o login: ");
     scanf("%d",&cod_usuario);
@@ -217,7 +252,7 @@ int trocarUsuario(){
 }
 
 int main() {
-	int login, opcao;
+	int login, opcao = -1;
 	
 	setlocale(LC_ALL, "Portuguese");
 
@@ -232,7 +267,7 @@ int main() {
                 printf("4. Trocar de Usuário\n");
 				printf("5. Atualizar carrinho\n"); 
                 printf("0. Sair\n");
-                printf("Escolha uma opção: ");
+                printf("Escolha uma opçãoo: ");
                 scanf("%d", &opcao);
                 
                 system("cls");
