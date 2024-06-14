@@ -38,6 +38,30 @@ int numClientes = 0;
 int numProdutos = 0;
 int numCompras = 0;
 
+/*Função responsável por fazer teste de erro
+TESTE 1 - Testa se é composto somente de letras
+TESTE 2- Testa se é composto somente de números
+
+Caso haja um erro ele retorna 1, caso contrário retorna 0*/
+int tratamento(char analise[], int teste){
+	int i;
+	
+	for(i = 0; analise[i] != '\0'; i++){
+		
+		if(teste == 1){
+			if(isalpha(analise[i]) == 0){
+				return 1;
+			}
+		}
+		else{
+			if(isdigit(analise[i]) == 0){
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
 // Função para cadastrar cliente
 void cadastrarCliente() {
     char buffer[MAX_CARACTER];
@@ -261,27 +285,54 @@ void delete_product(Produto estoque[], int *num_produtos, int produto_id) {
 
 // Função para trocar de usuário
 int trocarUsuario() {
+	char buffer[4];
     int senha_usuario;
     int cod_usuario;
-
-    printf("Informe o login: ");
-    scanf("%d", &cod_usuario);
-    printf("Informe a senha: ");
-    scanf("%d", &senha_usuario);
-
-    // Vendas
-    if (cod_usuario == 2525 && senha_usuario == 1234) {
-        return 1;
-    }
-    // Estoque
-    if (cod_usuario == 9973 && senha_usuario == 4321) {
-        return 2;
-    }
-    // Senha ou login errados
-    return -1;
+	
+	while(1){
+	    printf("Informe o login: ");
+	    scanf("%s", buffer);
+	    
+	    if(tratamento(buffer, 2)){
+	    	system("cls");
+	    	
+	    	printf("ERRO!! Foi digitado algo diferente de um número...\n");
+	    	printf("Por favor, tente novamente...\n");
+	    	
+	    	continue;
+		}
+		
+		sscanf(buffer, "%d", &cod_usuario);
+		
+	    printf("Informe a senha: ");
+	    scanf("%s", buffer);
+	    
+	    if(tratamento(buffer, 2)){
+	    	system("cls");
+	    	
+	    	printf("ERRO!! Foi digitado algo diferente de um número...\n");
+	    	printf("Por favor, tente novamente...\n");
+	    	
+	    	continue;
+		}
+	    
+	    sscanf(buffer, "%d", &senha_usuario);
+	
+	    // Vendas
+	    if (cod_usuario == 2525 && senha_usuario == 1234) {
+	        return 1;
+	    }
+	    // Estoque
+	    if (cod_usuario == 9973 && senha_usuario == 4321) {
+	        return 2;
+	    }
+	    // Senha ou login errados
+	    return -1;
+	}
 }
 
 int main() {
+	char buffer[4];
     int login, opcao = -1, produto_id;
 
     setlocale(LC_ALL, "Portuguese");
@@ -297,10 +348,20 @@ int main() {
                 printf("4. Trocar de Usuário\n");
                 printf("0. Sair\n");
                 printf("Escolha uma opção: ");
-                scanf("%d", &opcao);
-
+                scanf("%s", buffer);
+                
                 system("cls");
-
+                
+                if(tratamento(buffer, 2)){
+                	printf("ERRO!! Foi digitado algo que não era um número...\n");
+                	printf("Por favor tente novamente.\n");
+                	
+                	opcao = -1;
+                	continue;
+				}
+			
+				sscanf(buffer, "%d", &opcao);
+				
                 switch (opcao) {
                     case 1:
                         cadastrarCliente();
@@ -321,6 +382,7 @@ int main() {
                         printf("Opção inválida, por favor tente novamente...\n");
                         break;
                 }
+			
             } while (opcao != 0 && opcao != 4);
         } else if (login == 2) {
             do {
@@ -331,9 +393,20 @@ int main() {
                 printf("5. Remover Produto\n");
                 printf("0. Sair\n");
                 printf("Escolha uma opção: ");
-                scanf("%d", &opcao);
+                scanf("%s", buffer);
 
                 system("cls");
+                
+                if(tratamento(buffer, 2)){
+                	printf("ERRO!! Foi digitado algo que não era um número...\n");
+                	printf("Por favor, tente novamente...\n");
+                	
+                	opcao = -1;
+                	
+                	continue;
+				}
+				
+				sscanf(buffer, "%d", &opcao);
 
                 switch (opcao) {
                     case 1:
@@ -369,6 +442,7 @@ int main() {
             printf("Usuário e/ou senha incorreta(as)...\n");
         }
     } while (opcao != 0);
+    
     printf("FIM\n");
     return 0;
 }
