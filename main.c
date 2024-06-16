@@ -5,11 +5,13 @@
 #define WIDTH 70
 #define HEIGHT 15
 
-void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string);
-void login_screen();
-void welcome_screen();
+void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string); //Função para printar no centro
+void pag_login();   //Função para a pagina de login
+void pag_principal(); //Função para a pagina principal
+void cadastrar_cliente();
 void draw_rounded_box(WINDOW *win, int starty, int startx, int height, int width);
-void print_large_text(WINDOW *win, int starty, int startx, const char *string);
+void print_large_text(WINDOW *win, int starty, int startx, const char *string); //função para printar um texto longo
+
 
 int main() {
     setlocale(LC_ALL, "Portuguese");
@@ -24,7 +26,7 @@ int main() {
     noecho();
     curs_set(0);
 
-    login_screen();
+    pag_login();
 
     endwin();
     return 0;
@@ -76,7 +78,8 @@ void print_large_text(WINDOW *win, int starty, int startx, const char *string) {
     wattroff(win, A_BOLD | COLOR_PAIR(1));
 }
 
-void login_screen() {
+//Pagina de login
+void pag_login() {
     WINDOW *login_win;
     int startx, starty, width, height;
     char username[20], password[20];
@@ -109,7 +112,7 @@ void login_screen() {
 
         curs_set(1);
 
-        // Get username
+        // Insirir usuario
         wattron(login_win, COLOR_PAIR(3));
         wmove(login_win, 7, (WIDTH/2));
         echo();
@@ -117,7 +120,7 @@ void login_screen() {
         noecho();
         wattroff(login_win, COLOR_PAIR(3));
 
-        // Get password
+        // Inserir senha
         wattron(login_win, COLOR_PAIR(3));
         wmove(login_win, 9, (WIDTH/2));
         i = 0;
@@ -137,10 +140,10 @@ void login_screen() {
         password[i] = '\0';
         wattroff(login_win, COLOR_PAIR(3));
 
-        // Check username and password
+        // teste de usuario e senha
         if (strcmp(username, "2525") == 0 && strcmp(password, "1234") == 0) {
             delwin(login_win);
-            welcome_screen();
+            pag_principal();
             break;
         } else {
             wclear(login_win);
@@ -155,8 +158,74 @@ void login_screen() {
     }
 }
 
-void welcome_screen() {
-    WINDOW *welcome_win;
+void pag_principal() {
+    WINDOW *pagina_prin;
+    int startx, starty, width, height;
+    int opc_desejada;
+
+    height = HEIGHT;
+    width = WIDTH;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
+
+    pagina_prin = newwin(height, width, starty, startx);
+    wbkgd(pagina_prin, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(pagina_prin, 0, 0, height, width);
+    refresh();
+
+    wattron(pagina_prin, A_BOLD | COLOR_PAIR(1));
+    print_large_text(pagina_prin, 2, 0, "SISTEMA DE VENDAS");
+
+    // Lado esquerdo (vendas)
+    mvwprintw(pagina_prin, 4, 3, "1 - Cadastrar Cliente");
+    mvwprintw(pagina_prin, 5, 3, "2 - Realizar Venda");
+    mvwprintw(pagina_prin, 6, 3, "3 - Listar Carrinho");
+    mvwprintw(pagina_prin, 7, 3, "4 - Trocar de Usuario");
+
+    // Lado direito (estoque)
+    mvwprintw(pagina_prin, 4, width - strlen("5 - Cadastrar vendedor") - 3, "5 - Cadastrar vendedor");
+    mvwprintw(pagina_prin, 5, width - strlen("6 - Atualizar Estoque") - 3, "6 - Atualizar Estoque");
+    mvwprintw(pagina_prin, 6, width - strlen("7 - Consultar Produtos") - 3, "7 - Consultar Produtos");
+    mvwprintw(pagina_prin, 7, width - strlen("8 - Excluir Produto") - 3, "8 - Excluir Produto");
+
+    // Rodapé
+    mvwprintw(pagina_prin, 9, (width - strlen("9 - Sair ")) / 2, "9 Sair ");
+
+    //Entrada da opção desejada
+    mvwprintw(pagina_prin,12, (width - strlen("Enter:")) / 2-4, "Enter:");
+    mvwprintw(pagina_prin,12, (width - strlen(" ")) / 2, " ");
+    echo();
+    opc_desejada = wgetch(pagina_prin);
+    noecho();
+
+    switch (opc_desejada) {
+        case '1':
+            wgetch(pagina_prin);
+            cadastrar_cliente();
+            break;
+
+        case '2':
+            wgetch(pagina_prin);
+            realizar_venda();
+            break;
+    }
+
+
+
+    wattroff(pagina_prin, A_BOLD | COLOR_PAIR(1));
+
+    wrefresh(pagina_prin);
+
+    // Aguarda a entrada do usuário para fechar
+    wgetch(pagina_prin);
+
+    delwin(pagina_prin);
+}
+
+void cadastrar_cliente(){
+
+
+    WINDOW* cad_cli;
     int startx, starty, width, height;
 
     height = HEIGHT;
@@ -164,29 +233,35 @@ void welcome_screen() {
     starty = (LINES - height) / 2;
     startx = (COLS - width) / 2;
 
-    welcome_win = newwin(height, width, starty, startx);
-    wbkgd(welcome_win, COLOR_PAIR(1)); // Fundo branco
-    draw_rounded_box(welcome_win, 0, 0, height, width);
+    cad_cli = newwin(height, width, starty, startx);
+    wbkgd(cad_cli, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(cad_cli, 0, 0, height, width);
     refresh();
 
-    wattron(welcome_win, A_BOLD | COLOR_PAIR(1));
-    print_large_text(welcome_win, 2, 0, "SISTEMA DE VENDAS");
+    wattron(cad_cli, A_BOLD | COLOR_PAIR(1));
+    print_large_text(cad_cli, 2, 0, "CADASTRAR CLIENTE");
 
-    //Canto esquerdo (vendas)
-    mvwprintw(welcome_win, 4, 2, "- Cadastrar Cliente");
-    mvwprintw(welcome_win, 5, 2, "- Realizar Venda");
-    mvwprintw(welcome_win, 6, 2, "- Listar Carrinho");
-    mvwprintw(welcome_win, 7, 2, "- trocar de Usuario");
-    mvwprintw(welcome_win, 8, 2, "- Sair");
+    wgetch(cad_cli);
+    delwin(cad_cli);
+}
 
-    //Canto direito (estoque)
-    /*print_in_middle(welcome_win, 8, 0, WIDTH, "- Cadastrar vendedor");
-    wattroff(welcome_win, A_BOLD | COLOR_PAIR(1));
+void realizar_venda(){
+    WINDOW* rea_ven;
+    int startx, starty, width, height;
 
-    wrefresh(welcome_win);*/
+    height = HEIGHT;
+    width = WIDTH;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
 
-    //Aguarde a entrada do usu�rio fechar
-    wgetch(welcome_win);
+    rea_ven = newwin(height, width, starty, startx);
+    wbkgd(rea_ven, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(rea_ven, 0, 0, height, width);
+    refresh();
 
-    delwin(welcome_win);
+    wattron(rea_ven, A_BOLD | COLOR_PAIR(1));
+    print_large_text(rea_ven, 2, 0, "REALIZAR VENDA");
+
+    wgetch(rea_ven);
+    delwin(rea_ven);
 }
