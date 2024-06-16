@@ -158,6 +158,7 @@ void pag_login() {
     }
 }
 
+//Pagina Principal
 void pag_principal() {
     WINDOW *pagina_prin;
     int startx, starty, width, height;
@@ -180,16 +181,15 @@ void pag_principal() {
     mvwprintw(pagina_prin, 4, 3, "1 - Cadastrar Cliente");
     mvwprintw(pagina_prin, 5, 3, "2 - Realizar Venda");
     mvwprintw(pagina_prin, 6, 3, "3 - Listar Carrinho");
-    mvwprintw(pagina_prin, 7, 3, "4 - Trocar de Usuario");
 
     // Lado direito (estoque)
-    mvwprintw(pagina_prin, 4, width - strlen("5 - Cadastrar vendedor") - 3, "5 - Cadastrar vendedor");
-    mvwprintw(pagina_prin, 5, width - strlen("6 - Atualizar Estoque") - 3, "6 - Atualizar Estoque");
-    mvwprintw(pagina_prin, 6, width - strlen("7 - Consultar Produtos") - 3, "7 - Consultar Produtos");
-    mvwprintw(pagina_prin, 7, width - strlen("8 - Excluir Produto") - 3, "8 - Excluir Produto");
+    mvwprintw(pagina_prin, 4, width - strlen("4 - Cadastrar vendedor") - 3, "4 - Cadastrar vendedor");
+    mvwprintw(pagina_prin, 5, width - strlen("5 - Atualizar Estoque") - 3, "5 - Atualizar Estoque");
+    mvwprintw(pagina_prin, 6, width - strlen("6 - Consultar Produtos") - 3, "6 - Consultar Produtos");
+    mvwprintw(pagina_prin, 7, width - strlen("7 - Excluir Produto") - 3, "7 - Excluir Produto");
 
     // Rodapé
-    mvwprintw(pagina_prin, 9, (width - strlen("9 - Sair ")) / 2, "9 Sair ");
+    mvwprintw(pagina_prin, 9, (width - strlen("8 - Sair ")) / 2, "8 Sair ");
 
     //Entrada da opção desejada
     mvwprintw(pagina_prin,12, (width - strlen("Enter:")) / 2-4, "Enter:");
@@ -203,10 +203,33 @@ void pag_principal() {
             wgetch(pagina_prin);
             cadastrar_cliente();
             break;
-
         case '2':
             wgetch(pagina_prin);
             realizar_venda();
+            break;
+        case '3':
+            wgetch(pagina_prin);
+            listar_carrinho();
+            break;
+        case '4':
+            wgetch(pagina_prin);
+            cadastrar_vendedor();
+            break;
+        case '5':
+            wgetch(pagina_prin);
+            atualizar_estoque();
+            break;
+        case '6':
+            wgetch(pagina_prin);
+            consultar_produto();
+            break;
+        case '7':
+            wgetch(pagina_prin);
+            excluir_produto();
+            break;
+        case '8':
+            wgetch(pagina_prin);
+            pag_login();
             break;
     }
 
@@ -246,6 +269,7 @@ void cadastrar_cliente(){
 }
 
 void realizar_venda(){
+
     WINDOW* rea_ven;
     int startx, starty, width, height;
 
@@ -265,3 +289,110 @@ void realizar_venda(){
     wgetch(rea_ven);
     delwin(rea_ven);
 }
+
+void listar_carrinho(){
+    WINDOW* list_c;
+    int startx, starty, width, height;
+
+    height = HEIGHT;
+    width = WIDTH;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
+
+    list_c = newwin(height, width, starty, startx);
+    wbkgd(list_c, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(list_c, 0, 0, height, width);
+    refresh();
+
+    wattron(list_c, A_BOLD | COLOR_PAIR(1));
+    print_large_text(list_c, 2, 0, "CARRINHO");
+
+    wgetch(list_c);
+    delwin(list_c);
+}
+
+void cadastrar_vendedor(){
+    WINDOW* cad_vend;
+    int startx, starty, width, height;
+
+    height = HEIGHT;
+    width = WIDTH;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
+
+    cad_vend = newwin(height, width, starty, startx);
+    wbkgd(cad_vend, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(cad_vend, 0, 0, height, width);
+    refresh();
+
+    wattron(cad_vend, A_BOLD | COLOR_PAIR(1));
+    print_large_text(cad_vend, 2, 0, "CADASTRAR VENDEDOR");
+
+    wgetch(cad_vend);
+    delwin(cad_vend);
+}
+
+void atualizar_estoque(){
+    WINDOW* at_estoq;
+    int startx, starty, width, height;
+
+    height = HEIGHT;
+    width = WIDTH;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
+
+    at_estoq = newwin(height, width, starty, startx);
+    wbkgd(at_estoq, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(at_estoq, 0, 0, height, width);
+    refresh();
+
+    wattron(at_estoq, A_BOLD | COLOR_PAIR(1));
+    print_large_text(at_estoq, 2, 0, "ESTOQUE");
+
+    wgetch(at_estoq);
+    delwin(at_estoq);
+}
+
+void consultar_produto(){
+    WINDOW* con_pro;
+    int startx, starty, width, height;
+
+    height = HEIGHT;
+    width = WIDTH;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
+
+    con_pro = newwin(height, width, starty, startx);
+    wbkgd(con_pro, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(con_pro, 0, 0, height, width);
+    refresh();
+
+    wattron(con_pro, A_BOLD | COLOR_PAIR(1));
+    print_large_text(con_pro, 2, 0, "PRODUTOS");
+
+    wgetch(con_pro);
+    delwin(con_pro);
+}
+
+void excluir_produto(){
+    WINDOW* excl;
+    int startx, starty, width, height;
+
+    height = HEIGHT;
+    width = WIDTH;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
+
+    excl = newwin(height, width, starty, startx);
+    wbkgd(excl, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(excl, 0, 0, height, width);
+    refresh();
+
+    wattron(excl, A_BOLD | COLOR_PAIR(1));
+    print_large_text(excl, 2, 0, "EXCLUIR PRODUTO");
+
+    wgetch(excl);
+    delwin(excl);
+}
+
+
