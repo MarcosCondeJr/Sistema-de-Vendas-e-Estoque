@@ -219,8 +219,9 @@ void listarProdutos() {
 
 // Modulo vendas - calcula e retorna o total do carrinho
 float calcularTotalCarrinho() {
+	int i;
     float total = 0.0;
-    for (int i = 0; i < carrinho.num_produtos; i++) {
+    for (i = 0; i < carrinho.num_produtos; i++) {
         total += carrinho.preco[i] * carrinho.quantidade[i];
     }
     return total;
@@ -238,7 +239,7 @@ void listarCompras() {
 }
 
 // Modulo vendas/estoque - Permite a troca de usuários
-int trocarUsuario() {
+int login() {
     int senha_usuario;
     int cod_usuario;
 
@@ -250,12 +251,8 @@ int trocarUsuario() {
     if (cod_usuario == 2525 && senha_usuario == 1234) {
         return 1;
     }
-    // Estoque
-    if (cod_usuario == 9973 && senha_usuario == 4321) {
-        return 2;
-    }
-    // Senha ou login errados
-    return -1;
+    
+    return 0;
 }
 
 // Modulo estoque - Função para excluir um produto do estoque pelo nome
@@ -288,21 +285,23 @@ void delete_product(Produto produtos[], int *numProdutos, char nomeP[]) {
 }
 
 int main() {
-    int login, opcao = -1;
+    int opcao = -1;
     char nomeP[MAX_CARACTER];
 
     setlocale(LC_ALL, "Portuguese");
 
     do {
-        login = trocarUsuario();
-
-        if (login == 1) {
+        if (login()) {
             do {
                 printf("1. Cadastrar Cliente\n");
-                printf("2. Realizar Venda\n");
-                printf("3. Listar Carrinho\n");
-                printf("4. Trocar de Usuário\n");
-                printf("0. Sair\n");
+                printf("2. Cadastrar produto\n");
+                printf("3. Adicionar/remover produto\n");
+                printf("4. Deletar produto\n");
+                printf("5. Realizar Venda\n");
+                printf("6. Listar Carrinho\n");
+                printf("7. Listar clientes\n");
+                printf("8. Listar Produtos\n");
+                printf("9. Sair\n");
                 printf("Escolha uma opção: ");
                 scanf("%d", &opcao);
 
@@ -313,66 +312,39 @@ int main() {
                         cadastrarCliente();
                         break;
                     case 2:
-                        comprar();
-                        break;
+                    	cadastrarProduto();
+                    break;
                     case 3:
-                        listarCompras();
-                        break;
+                    	adicionar(produtos, numProdutos);
+                    break;
                     case 4:
-                        break;
-                    case 0:
-                        login = -1;
-                        break;
-                    default:
-                        printf("Opção inválida, por favor tente novamente...\n");
-                        break;
-                }
-            } while (opcao != 0 && opcao != 4);
-        } else if (login == 2) {
-            do {
-                printf("1. Cadastrar Produto\n");
-                printf("2. Adicionar Produto\n");
-                printf("3. Listar Produtos\n");
-                printf("4. Remover Produto\n");
-                printf("5. Trocar Usuário\n");
-                printf("0. Sair\n");
-                printf("Escolha uma opção: ");
-                scanf("%d", &opcao);
-
-                system("cls");
-
-                switch (opcao) {
-                    case 1:
-                        cadastrarProduto();
-                        break;
-                    case 2:
-                        adicionar(produtos, numProdutos);
-                        break;
-                    case 3:
-                        listarProdutos();
-                        break;
-                    case 4:
-                        printf("Digite o nome do produto a ser removido: ");
+                    	printf("Digite o nome do produto a ser removido: ");
                         scanf(" %49[^\n]s", nomeP);
+                        
                         delete_product(produtos, &numProdutos, nomeP);
-                        break;
+                    break;
                     case 5:
-                        break;
-                    case 0:
-                        login = -1;
-                        break;
+                    	comprar();
+                    break;
+                    case 6:
+                    	listarCompras();
+                    break;
+                    case 7:
+                    	listarClientes();
+                    break;
+                    case 8:
+                    	listarProdutos();
+                    case 9:
+                    break;
                     default:
                         printf("Opção inválida, por favor tente novamente...\n");
-                        break;
+                    break;
                 }
-            } while (opcao != 0 && opcao != 5);
-        } else {
-            system("cls");
-            printf("Usuário e/ou senha incorreta(as)...\n");
-        }
-    } while (opcao != 0);
-
-    printf("FIM\n");
+            } while (opcao != 9);
+    	}
+    } while (1);
+    
     return 0;
 }
+
 
