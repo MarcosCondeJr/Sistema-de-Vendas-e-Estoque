@@ -68,11 +68,6 @@ void cadastrarCliente() {
     char buffer[MAX_CARACTER];
 
     if (numClientes < MAX_CLIENTES) {
-    	do{
-    		printf("Digite o nome do cliente: ");
-        	scanf(" %49[^\n]s", buffer);
-        	
-		}while(0);
         printf("Digite o nome do cliente: ");
         scanf(" %49[^\n]s", buffer);
 
