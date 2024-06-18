@@ -179,19 +179,19 @@ void pag_principal() {
     print_large_text(pagina_prin, 2, 0, "SISTEMA DE VENDAS");
 
     // Lado esquerdo
-    mvwprintw(pagina_prin, 4, 3, "1 - Cadastrar Produto");
-    mvwprintw(pagina_prin, 5, 3, "2 - Cadastrar Cliente");
+    mvwprintw(pagina_prin, 4, 3, "1 - Cadastrar Cliente");
+    mvwprintw(pagina_prin, 5, 3, "2 - Cadastrar Produto");
     mvwprintw(pagina_prin, 6, 3, "3 - Atualizar Estoque");
     mvwprintw(pagina_prin, 7, 3, "4 - Deletar Produto");
 
     // Lado direito
-    mvwprintw(pagina_prin, 4, width - strlen("5 - Deletar Cliente") - 3, "5 - Deletar Cliente");
-    mvwprintw(pagina_prin, 5, width - strlen("6 - Realizar Venda") - 3, "6 - Realizar Venda");
-    mvwprintw(pagina_prin, 6, width - strlen("7 - Mostrar Carrinho") - 3, "7 - Mostrar Carrinho");
-    //mvwprintw(pagina_prin, 7, width - strlen("8 - Excluir Produto") - 3, "8 - Excluir Produto");
+    mvwprintw(pagina_prin, 4, width - strlen("5 - Realizar Venda") - 3, "5 - Realizar Venda");
+    mvwprintw(pagina_prin, 5, width - strlen("6 - Listar Carrinho") - 3, "6 - Listar Carrinho");
+    mvwprintw(pagina_prin, 6, width - strlen("7 - Listar Clientes") - 3, "7 - Listar Clientes");
+    mvwprintw(pagina_prin, 7, width - strlen("8 - Listar Produtos") - 3, "8 - Listar Produtos");
 
     // Rodapé
-    mvwprintw(pagina_prin, 9, (width - strlen("8 - Sair ")) / 2, "8 Sair ");
+    mvwprintw(pagina_prin, 9, (width - strlen("9 - Sair ")) / 2+1, "9 Sair ");
 
     //Entrada da opção desejada
     mvwprintw(pagina_prin,12, (width - strlen("Enter:")) / 2-4, "Enter:");
@@ -203,11 +203,11 @@ void pag_principal() {
     switch (opc_desejada) {
         case '1':
             wgetch(pagina_prin);
-            cadastrar_produto();
+            cadastrar_cliente();
             break;
         case '2':
             wgetch(pagina_prin);
-            cadastrar_cliente();
+            cadastrar_produto();
             break;
         case '3':
             wgetch(pagina_prin);
@@ -219,17 +219,20 @@ void pag_principal() {
             break;
         case '5':
             wgetch(pagina_prin);
-            deletar_cliente();
+            realizar_venda();
             break;
         case '6':
             wgetch(pagina_prin);
-            realizar_venda();
-            break;
+            listar_carrinho();
         case '7':
             wgetch(pagina_prin);
-            listar_carrinho();
+            listar_cliente();
             break;
         case '8':
+            wgetch(pagina_prin);
+            listar_prod();
+            break;
+        case '9':
             wgetch(pagina_prin);
             pag_login();
             break;
@@ -386,8 +389,8 @@ void deletar_produto(){
     pag_principal();
 }
 
-void deletar_cliente(){
-    WINDOW* del;
+void listar_prod(){
+    WINDOW* lis;
     int startx, starty, width, height;
     char cli[20];
 
@@ -396,30 +399,30 @@ void deletar_cliente(){
     starty = (LINES - height) / 2;
     startx = (COLS - width) / 2;
 
-    del = newwin(height, width, starty, startx);
-    wbkgd(del, COLOR_PAIR(1)); // Fundo branco
-    draw_rounded_box(del, 0, 0, height, width);
+    lis = newwin(height, width, starty, startx);
+    wbkgd(lis, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(lis, 0, 0, height, width);
     refresh();
 
-    wattron(del, A_BOLD | COLOR_PAIR(1));
-    print_large_text(del, 2, 0, "DELETAR CLIENTE");
+    wattron(lis, A_BOLD | COLOR_PAIR(1));
+    print_large_text(lis, 2, 0, "DELETAR CLIENTE");
 
     //Nome do cliente a ser deletado
-    mvwprintw(del, 5, 10, "Nome do cliente: ");
+    mvwprintw(lis, 5, 10, "Nome do cliente: ");
     echo();
-    wgetnstr(del, cli, sizeof(cli) - 1);
+    wgetnstr(lis, cli, sizeof(cli) - 1);
     noecho();
 
-    wattron(del, A_BOLD | COLOR_PAIR(2));
-    mvwprintw(del, 7, (WIDTH/2)-4, "Deletar");
-    wgetch(del);
+    wattron(lis, A_BOLD | COLOR_PAIR(2));
+    mvwprintw(lis, 7, (WIDTH/2)-4, "Deletar");
+    wgetch(lis);
 
     // Mensagem de cliente deletado
-    wattron(del, A_BOLD | COLOR_PAIR(4)); // COR VERDE NO NOME CLIENTE CADASTRADO
-    mvwprintw(del, 7, (width - strlen("Cliente Deletado")) / 2, "Cliente Deletado");
-    wattroff(del, A_BOLD | COLOR_PAIR(4));
+    wattron(lis, A_BOLD | COLOR_PAIR(4)); // COR VERDE NO NOME CLIENTE CADASTRADO
+    mvwprintw(lis, 7, (width - strlen("Cliente Deletado")) / 2, "Cliente Deletado");
+    wattroff(lis, A_BOLD | COLOR_PAIR(4));
 
-    wgetch(del);
+    wgetch(lis);
     pag_principal();
 }
 
@@ -468,3 +471,26 @@ void listar_carrinho(){
     pag_principal();
 }
 
+
+void listar_cliente(){
+    WINDOW* lis_c;
+    int startx, starty, width, height;
+
+    height = HEIGHT;
+    width = WIDTH;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
+
+    lis_c = newwin(height, width, starty, startx);
+    wbkgd(lis_c, COLOR_PAIR(1)); // Fundo branco
+    draw_rounded_box(lis_c, 0, 0, height, width);
+    refresh();
+
+    wattron(lis_c, A_BOLD | COLOR_PAIR(1));
+    print_large_text(lis_c, 2, 0, "CLIENTES");
+    print_large_text(lis_c,6,0,"CLIENTE: MARCOS CONDE");
+    print_large_text(lis_c,8,0,"TOTAL DO CARRINHO: 0,0");
+
+    wgetch(lis_c);
+    pag_principal();
+}
