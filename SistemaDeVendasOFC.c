@@ -61,7 +61,11 @@ int main() {
     init_pair(1, COLOR_WHITE, COLOR_BLACK);    // COR DO TEXTO BRANCO, COR DE FUNDO PRETO
     init_pair(2, COLOR_RED, COLOR_BLACK);     // Texto vermelho para erros
     init_pair(3, COLOR_BLACK, COLOR_WHITE);    // Texto preto, fundo branco (para campos de entrada)
-    init_pair(4, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_GREEN, COLOR_BLACK); //texto verde, para sucessos
+    init_pair(5, COLOR_BLUE, COLOR_BLACK); //texto azul, para sucessos
+    init_pair(6, COLOR_YELLOW, COLOR_BLACK); //texto amarelo, para produtos
+
+
 
     bkgd(COLOR_PAIR(1)); // Definir o fundo da janela principal como branco
     cbreak();
@@ -730,9 +734,9 @@ void realizar_venda() {
         }
 
         if (!achou) {
-            wattron(rea_ven, A_BOLD | COLOR_PAIR(3)); // COR VERMELHA PARA ERRO
-            mvwprintw(rea_ven, 12 + i * 2, (width - strlen("Produto não encontrado")) / 2, "Produto não encontrado");
-            wattroff(rea_ven, A_BOLD | COLOR_PAIR(3));
+            wattron(rea_ven, A_BOLD | COLOR_PAIR(2));
+            mvwprintw(rea_ven, 10 + i * 2, (width - strlen("Produto nao encontrado")) / 2, "Produto nao encontrado");
+            wattroff(rea_ven, A_BOLD | COLOR_PAIR(2));
             wrefresh(rea_ven);
             wgetch(rea_ven);
             delwin(rea_ven);
@@ -749,10 +753,9 @@ void realizar_venda() {
     wclear(rea_ven);
 }
 
-void listar_prod(){
-    WINDOW* lis;
+void listar_prod() {
+    WINDOW *lis;
     int startx, starty, width, height;
-    char cli[20];
 
     height = HEIGHT;
     width = WIDTH;
@@ -765,30 +768,38 @@ void listar_prod(){
     refresh();
 
     wattron(lis, A_BOLD | COLOR_PAIR(1));
-    print_large_text(lis, 2, 0, "DELETAR CLIENTE");
+    print_large_text(lis, 2, 0, "LISTA DE PRODUTOS");
+    wattroff(lis, A_BOLD | COLOR_PAIR(1));
 
-    //Nome do cliente a ser deletado
-    mvwprintw(lis, 5, 10, "Nome do cliente: ");
-    echo();
-    wgetnstr(lis, cli, sizeof(cli) - 1);
-    noecho();
-
-    wattron(lis, A_BOLD | COLOR_PAIR(2));
-    mvwprintw(lis, 7, (WIDTH/2)-4, "Deletar");
-    wgetch(lis);
-
-    // Mensagem de cliente deletado
-    wattron(lis, A_BOLD | COLOR_PAIR(4)); // COR VERDE NO NOME CLIENTE CADASTRADO
-    mvwprintw(lis, 7, (width - strlen("Cliente Deletado")) / 2, "Cliente Deletado");
+    // Cabeçalho da lista de produtos
+    wattron(lis, A_BOLD | COLOR_PAIR(4));
+    mvwprintw(lis, 4, (width - strlen("ID   NOME   PREÇO  QUANTIDADE")) / 2, "ID  NOME  PREÇO  QUANTIDADE");
     wattroff(lis, A_BOLD | COLOR_PAIR(4));
 
-    wgetch(lis);
-    pag_principal();
+    // Listagem dos produtos
+    int i;
+    for (i = 0; i < numProdutos; i++) {
+        mvwprintw(lis, 6 + i, 20, "%d    %s    %.2f    %d",
+                  produtos[i].id, produtos[i].nome, produtos[i].preco, produtos[i].quantidade);
+    }
+
+    wrefresh(lis);
+    wgetch(lis); // Espera o usuário pressionar uma tecla para continuar
+    delwin(lis);
 }
 
-void listar_carrinho(){
-    WINDOW* list_c;
+float calcularTotalCarrinho() {
+    float total = 0.0;
+    for (int i = 0; i < carrinho.num_produtos; i++) {
+        total += carrinho.preco[i] * carrinho.quantidade[i];
+    }
+    return total;
+}
+
+void listar_carrinho() {
+    WINDOW *list_c;
     int startx, starty, width, height;
+    int i;
 
     height = HEIGHT;
     width = WIDTH;
@@ -802,17 +813,34 @@ void listar_carrinho(){
 
     wattron(list_c, A_BOLD | COLOR_PAIR(1));
     print_large_text(list_c, 2, 0, "CARRINHO");
-    print_large_text(list_c,6,0,"CLIENTE: MARCOS CONDE");
-    print_large_text(list_c,8,0,"TOTAL DO CARRINHO: 0,0");
+    wattroff(list_c, A_BOLD | COLOR_PAIR(1));
 
-    wgetch(list_c);
+    // Exibe o nome do cliente
+    mvwprintw(list_c, 4, 12, "Nome cliente: %s", carrinho.nomecliente);
+
+    // Exibe os produtos do carrinho
+    for (i = 0; i < carrinho.num_produtos; i++) {
+        mvwprintw(list_c, 6 + i, 5, "Produto: %s, Quantidade: %d, Preço: %.2f",
+                  carrinho.nomeproduto[i], carrinho.quantidade[i], carrinho.preco[i]);
+    }
+
+    // Calcula e exibe o total do carrinho
+    float total = calcularTotalCarrinho();
+    wattron(list_c, A_BOLD | COLOR_PAIR(4));
+    mvwprintw(list_c, 6 + carrinho.num_produtos + 2, 2, "Total do carrinho: %.2f", total);
+    wattroff(list_c, A_BOLD | COLOR_PAIR(4));
+
+    wrefresh(list_c);
+    wgetch(list_c); // Espera o usuário pressionar uma tecla para continuar
+    delwin(list_c);
     pag_principal();
 }
 
 
-void listar_cliente(){
-    WINDOW* lis_c;
+void listar_cliente() {
+    WINDOW *lis_c;
     int startx, starty, width, height;
+    int i;
 
     height = HEIGHT;
     width = WIDTH;
@@ -825,10 +853,21 @@ void listar_cliente(){
     refresh();
 
     wattron(lis_c, A_BOLD | COLOR_PAIR(1));
-    print_large_text(lis_c, 2, 0, "CLIENTES");
-    print_large_text(lis_c,6,0,"CLIENTE: MARCOS CONDE");
-    print_large_text(lis_c,8,0,"TOTAL DO CARRINHO: 0,0");
+    print_large_text(lis_c, 2, 0, "LISTA DE CLIENTES");
+    wattroff(lis_c, A_BOLD | COLOR_PAIR(1));
 
-    wgetch(lis_c);
+    // Cabeçalho da lista de clientes
+    wattron(lis_c, A_BOLD | COLOR_PAIR(5));
+    mvwprintw(lis_c, 4, (WIDTH/2)-7, "ID   CLIENTE");
+    wattroff(lis_c, A_BOLD | COLOR_PAIR(5));
+
+    // Lista os clientes
+    for (i = 0; i < numClientes; i++) {
+        mvwprintw(lis_c, 6 + i, (WIDTH/2)-7, "%d    %s", clientes[i].id, clientes[i].nome);
+    }
+
+    wrefresh(lis_c);
+    wgetch(lis_c); // Espera o usuário pressionar uma tecla para continuar
+    delwin(lis_c);
     pag_principal();
 }
