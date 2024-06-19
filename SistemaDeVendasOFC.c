@@ -231,7 +231,7 @@ void pag_principal() {
 
     // Lado direito
     mvwprintw(pagina_prin, 4, width - strlen("5 - Realizar Venda") - 3, "5 - Realizar Venda");
-    mvwprintw(pagina_prin, 5, width - strlen("6 - Listar Carrinho") - 3, "6 - Listar Carrinho");
+    mvwprintw(pagina_prin, 5, width - strlen("6 - Listar Carrinho") - 3, "6 - Listar Compras");
     mvwprintw(pagina_prin, 6, width - strlen("7 - Listar Clientes") - 3, "7 - Listar Clientes");
     mvwprintw(pagina_prin, 7, width - strlen("8 - Listar Produtos") - 3, "8 - Listar Produtos");
 
@@ -268,7 +268,7 @@ void pag_principal() {
             break;
         case '6':
             wgetch(pagina_prin);
-            listar_carrinho();
+            listar_compras();
         case '7':
             wgetch(pagina_prin);
             listar_cliente();
@@ -716,6 +716,7 @@ void realizar_venda() {
                     wgetnstr(rea_ven, qtd, sizeof(qtd) - 1);
                     noecho();
                     quantidade = atoi(qtd);
+
                 } while (!(quantidade > 0 && quantidade <= produtos[x].quantidade));
 
                 produtos[x].quantidade -= quantidade;
@@ -773,7 +774,7 @@ void listar_prod() {
 
     // Cabeçalho da lista de produtos
     wattron(lis, A_BOLD | COLOR_PAIR(4));
-    mvwprintw(lis, 4, (width - strlen("ID   NOME   PREÇO  QUANTIDADE")) / 2, "ID  NOME  PREÇO  QUANTIDADE");
+    mvwprintw(lis, 4, 20, "ID   NOME    VALOR   QUANTIDADE");
     wattroff(lis, A_BOLD | COLOR_PAIR(4));
 
     // Listagem dos produtos
@@ -796,7 +797,7 @@ float calcularTotalCarrinho() {
     return total;
 }
 
-void listar_carrinho() {
+void listar_compras() {
     WINDOW *list_c;
     int startx, starty, width, height;
     int i;
@@ -812,22 +813,28 @@ void listar_carrinho() {
     refresh();
 
     wattron(list_c, A_BOLD | COLOR_PAIR(1));
-    print_large_text(list_c, 2, 0, "CARRINHO");
+    print_large_text(list_c, 2, 0, "COMPRAS");
     wattroff(list_c, A_BOLD | COLOR_PAIR(1));
 
     // Exibe o nome do cliente
-    mvwprintw(list_c, 4, 12, "Nome cliente: %s", carrinho.nomecliente);
+    wattron(list_c, A_BOLD | COLOR_PAIR(5));
+    mvwprintw(list_c, 4, (WIDTH/2)-7, "Cliente: %s", carrinho.nomecliente);
+    wattroff(list_c, A_BOLD | COLOR_PAIR(5));
 
     // Exibe os produtos do carrinho
     for (i = 0; i < carrinho.num_produtos; i++) {
-        mvwprintw(list_c, 6 + i, 5, "Produto: %s, Quantidade: %d, Preço: %.2f",
+        wattron(list_c, A_BOLD | COLOR_PAIR(6));
+        mvwprintw(list_c, 6 + i, (WIDTH/2)-14, "Produto   Quantidade   Valor");
+        wattroff(list_c, A_BOLD | COLOR_PAIR(6));
+        mvwprintw(list_c, 7 + i, (WIDTH/2)-14, "%s        %d          %.2f",
                   carrinho.nomeproduto[i], carrinho.quantidade[i], carrinho.preco[i]);
+
     }
 
     // Calcula e exibe o total do carrinho
     float total = calcularTotalCarrinho();
     wattron(list_c, A_BOLD | COLOR_PAIR(4));
-    mvwprintw(list_c, 6 + carrinho.num_produtos + 2, 2, "Total do carrinho: %.2f", total);
+    mvwprintw(list_c, 7 + carrinho.num_produtos + 2, (WIDTH/2)-11, "Total da Compra: %.2f", total);
     wattroff(list_c, A_BOLD | COLOR_PAIR(4));
 
     wrefresh(list_c);
