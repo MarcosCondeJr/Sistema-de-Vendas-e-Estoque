@@ -785,7 +785,7 @@ void listar_prod() {
 
     wrefresh(lis);
     wgetch(lis); // Espera o usuário pressionar uma tecla para continuar
-    delwin(lis);
+    pag_principal();
 }
 
 float calcularTotalCarrinho() {
